@@ -1,0 +1,1581 @@
+{
+  "info": {
+    "name": "Project EQU - API Collection",
+    "description": "Colección completa para probar la API de Project EQU con autenticación JWT, usuarios, roles, trabajos y flujo secuencial de permisos",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "tecnico_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "supervisor_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "trabajo_secuencial_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "permiso_altura_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "permiso_enganche_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "permiso_cierre_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "🔐 Autenticación",
+      "item": [
+        {
+          "name": "Login - Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin1@demo.com\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.access_token) {",
+                  "        pm.collectionVariables.set('auth_token', response.access_token);",
+                  "        console.log('Token Admin guardado:', response.access_token);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login - Técnico",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tecnico1@demo.com\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.access_token) {",
+                  "        pm.collectionVariables.set('tecnico_token', response.access_token);",
+                  "        console.log('Token Técnico guardado:', response.access_token);",
+                  "    }",
+                  "    if (response.user && response.user.id) {",
+                  "        pm.collectionVariables.set('tecnico_id', response.user.id);",
+                  "        console.log('ID Técnico guardado:', response.user.id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login - Supervisor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"supervisor1@demo.com\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.access_token) {",
+                  "        pm.collectionVariables.set('supervisor_token', response.access_token);",
+                  "        console.log('Token Supervisor guardado:', response.access_token);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🔄 Flujo Secuencial - Trabajos con Permisos",
+      "item": [
+        {
+          "name": "1️⃣ Crear Trabajo con Permisos Automáticos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Trabajo Secuencial - {{$randomJobTitle}}\",\n  \"descripcion\": \"Trabajo para probar el flujo secuencial completo de permisos\",\n  \"observacion\": \"Creado automáticamente para testing del flujo\",\n  \"tecnicoAsignadoId\": \"{{tecnico_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/trabajos",
+              "host": ["{{base_url}}"],
+              "path": ["trabajos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Trabajo creado exitosamente', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('trabajo_secuencial_id', response.id);",
+                  "    ",
+                  "    // Extraer IDs de permisos automáticos",
+                  "    if (response.permisos && response.permisos.length >= 3) {",
+                  "        const alturaPermiso = response.permisos.find(p => p.tipoPermiso.nombre === 'altura');",
+                  "        const enganchePermiso = response.permisos.find(p => p.tipoPermiso.nombre === 'enganche');",
+                  "        const cierrePermiso = response.permisos.find(p => p.tipoPermiso.nombre === 'cierre');",
+                  "        ",
+                  "        if (alturaPermiso) pm.collectionVariables.set('permiso_altura_id', alturaPermiso.id);",
+                  "        if (enganchePermiso) pm.collectionVariables.set('permiso_enganche_id', enganchePermiso.id);",
+                  "        if (cierrePermiso) pm.collectionVariables.set('permiso_cierre_id', cierrePermiso.id);",
+                  "    }",
+                  "    ",
+                  "    console.log('Trabajo creado:', response.id);",
+                  "    console.log('Permisos automáticos creados:', response.permisos.length);",
+                  "} else {",
+                  "    console.log('Error al crear trabajo:', pm.response.status, pm.response.text());",
+                  "}",
+                  "",
+                  "// Delay para evitar rate limiting",
+                  "setTimeout(function(){}, 1000);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "1.5️⃣ Asignar Técnico al Trabajo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tecnicoId\": \"{{tecnico_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/trabajos/{{trabajo_secuencial_id}}/asignar-tecnico",
+              "host": ["{{base_url}}"],
+              "path": ["trabajos", "{{trabajo_secuencial_id}}", "asignar-tecnico"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Asignación de técnico exitosa', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    console.log('Técnico asignado correctamente al trabajo');",
+                  "    // Delay para asegurar que la DB se actualice",
+                  "    setTimeout(function(){}, 2000);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2️⃣ Solicitar Permiso Altura (con imagen)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tecnico_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "test-image.jpg"
+                },
+                {
+                  "key": "descripcion",
+                  "value": "Solicitud de permiso para trabajo en altura - Área segura verificada",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_altura_id}}/solicitar-con-imagen",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_altura_id}}", "solicitar-con-imagen"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Solicitud de ALTURA con imagen exitosa', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    console.log('Permiso de altura solicitado con imagen correctamente');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3️⃣ Aprobar Permiso Altura (Supervisor)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisor_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comentario\": \"Área verificada, condiciones seguras para trabajo en altura\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_altura_id}}/aprobar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_altura_id}}", "aprobar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Aprobación de ALTURA exitosa', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    console.log('Permiso de altura aprobado por supervisor');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "4️⃣ Solicitar Permiso Enganche (con imagen)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tecnico_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "test-image.jpg"
+                },
+                {
+                  "key": "descripcion",
+                  "value": "Solicitud de permiso para trabajo de enganche - Equipos preparados",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_enganche_id}}/solicitar-con-imagen",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_enganche_id}}", "solicitar-con-imagen"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Solicitud de ENGANCHE con imagen exitosa', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    console.log('Permiso de enganche solicitado con imagen correctamente');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "5️⃣ Aprobar Permiso Enganche (Supervisor)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisor_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comentario\": \"Equipos verificados, procedimiento de enganche autorizado\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_enganche_id}}/aprobar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_enganche_id}}", "aprobar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Aprobación de ENGANCHE exitosa', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    console.log('Permiso de enganche aprobado por supervisor');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "6️⃣ Solicitar Permiso Cierre (con imagen)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tecnico_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "test-image.jpg"
+                },
+                {
+                  "key": "descripcion",
+                  "value": "Solicitud de permiso para cierre - Trabajo completado",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_cierre_id}}/solicitar-con-imagen",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_cierre_id}}", "solicitar-con-imagen"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Solicitud de CIERRE con imagen exitosa', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    console.log('Permiso de cierre solicitado con imagen correctamente');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "7️⃣ Aprobar Permiso Cierre (Supervisor)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisor_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comentario\": \"Trabajo completado satisfactoriamente, área restaurada\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_cierre_id}}/aprobar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_cierre_id}}", "aprobar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Aprobación de CIERRE exitosa', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    console.log('Permiso de cierre aprobado - Flujo secuencial completado');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "✅ Verificar Estado Final del Trabajo",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/trabajos/{{trabajo_secuencial_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["trabajos", "{{trabajo_secuencial_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Trabajo debe estar TERMINADO', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.estado).to.eql('terminado');",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('Estado final del trabajo:', response.estado);",
+                  "    console.log('Permisos completados:', response.permisos ? response.permisos.filter(p => p.estado === 'APROBADO').length : 0);",
+                  "    console.log('Total de imágenes:', response.permisos ? response.permisos.reduce((total, p) => total + (p.imagenes ? p.imagenes.length : 0), 0) : 0);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "👥 Usuarios",
+      "item": [
+        {
+          "name": "📋 Listar Usuarios - Formato Nuevo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": ["{{base_url}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "📋 Listar Usuarios - Formato Legacy",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users?format=legacy",
+              "host": ["{{base_url}}"],
+              "path": ["users"],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "legacy"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "📋 Listar Usuarios - Formato Completo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users?format=full",
+              "host": ["{{base_url}}"],
+              "path": ["users"],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "full"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "➕ Crear Usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nuevo@demo.com\",\n  \"password\": \"123456\",\n  \"name\": \"Usuario Nuevo\",\n  \"phone\": \"+1234567899\",\n  \"roleId\": \"cfd2c317-70c9-4c1f-9a2a-9345e8b17d31\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": ["{{base_url}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "👁️ Obtener Usuario por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/fb0fbdb6-32ec-49b6-8755-ccccb4543ed8",
+              "host": ["{{base_url}}"],
+              "path": ["users", "fb0fbdb6-32ec-49b6-8755-ccccb4543ed8"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🎭 Roles",
+      "item": [
+        {
+          "name": "📋 Listar Roles - Formato Simple",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/roles?format=simple",
+              "host": ["{{base_url}}"],
+              "path": ["roles"],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "simple"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "📋 Listar Roles - Formato Legacy",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/roles?format=legacy",
+              "host": ["{{base_url}}"],
+              "path": ["roles"],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "legacy"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "📋 Listar Roles - Formato Completo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/roles?format=full",
+              "host": ["{{base_url}}"],
+              "path": ["roles"],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "full"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "➕ Crear Rol - Técnico",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"tecnico\",\n  \"description\": \"Rol de técnico con permisos para gestionar tareas técnicas\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/roles",
+              "host": ["{{base_url}}"],
+              "path": ["roles"]
+            }
+          }
+        },
+        {
+          "name": "➕ Crear Rol - Supervisor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"supervisor\",\n  \"description\": \"Rol de supervisor con permisos para supervisar equipos y tareas\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/roles",
+              "host": ["{{base_url}}"],
+              "path": ["roles"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏗️ Trabajos",
+      "item": [
+        {
+          "name": "📋 Listar Trabajos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/trabajos",
+              "host": ["{{base_url}}"],
+              "path": ["trabajos"]
+            }
+          }
+        },
+        {
+          "name": "➕ Crear Trabajo Secuencial",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisor_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Instalación Secuencial de Torre\",\n  \"descripcion\": \"Instalación completa con flujo secuencial de permisos: altura → enganche → cierre\",\n  \"observacion\": \"Trabajo de prueba para validar flujo secuencial\",\n  \"imagenes\": [\"https://example.com/torre.jpg\"],\n  \"tecnicoAsignadoId\": \"a11e49a8-032a-4b5a-824a-d9c3be7f3a23\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/trabajos",
+              "host": ["{{base_url}}"],
+              "path": ["trabajos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    const trabajoId = response.id;",
+                  "    pm.collectionVariables.set('trabajo_secuencial_id', trabajoId);",
+                  "    console.log('✅ Trabajo secuencial creado:', trabajoId);",
+                  "    ",
+                  "    // Extraer IDs de permisos automáticamente creados",
+                  "    if (response.permisos && response.permisos.length > 0) {",
+                  "        const permisoAltura = response.permisos.find(p => p.tipo === 'altura');",
+                  "        const permisoEnganche = response.permisos.find(p => p.tipo === 'enganche');",
+                  "        const permisoCierre = response.permisos.find(p => p.tipo === 'cierre');",
+                  "        ",
+                  "        if (permisoAltura) {",
+                  "            pm.collectionVariables.set('permiso_altura_id', permisoAltura.id);",
+                  "            console.log('✅ Permiso ALTURA ID:', permisoAltura.id);",
+                  "        }",
+                  "        if (permisoEnganche) {",
+                  "            pm.collectionVariables.set('permiso_enganche_id', permisoEnganche.id);",
+                  "            console.log('✅ Permiso ENGANCHE ID:', permisoEnganche.id);",
+                  "        }",
+                  "        if (permisoCierre) {",
+                  "            pm.collectionVariables.set('permiso_cierre_id', permisoCierre.id);",
+                  "            console.log('✅ Permiso CIERRE ID:', permisoCierre.id);",
+                  "        }",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "👁️ Obtener Trabajo por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/trabajos/{{trabajo_secuencial_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["trabajos", "{{trabajo_secuencial_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📋 Permisos - Gestión Básica",
+      "item": [
+        {
+          "name": "📋 Listar Todos los Permisos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/permisos",
+              "host": ["{{base_url}}"],
+              "path": ["permisos"]
+            }
+          }
+        },
+        {
+          "name": "📋 Listar Permisos Pendientes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/permisos/pendientes",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "pendientes"]
+            }
+          }
+        },
+        {
+          "name": "📋 Mis Permisos (Técnico)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tecnico_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/permisos/mis-permisos",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "mis-permisos"]
+            }
+          }
+        },
+        {
+          "name": "📋 Permisos por Trabajo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/permisos/trabajo/{{trabajo_secuencial_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "trabajo", "{{trabajo_secuencial_id}}"]
+            }
+          }
+        },
+        {
+          "name": "👁️ Obtener Permiso por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_altura_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_altura_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔄 Flujo Secuencial de Permisos",
+      "item": [
+        {
+          "name": "🚫 PRUEBA: Solicitar ENGANCHE sin ALTURA (Debe Fallar)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tecnico_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Intento de solicitar enganche sin altura aprobada - debe fallar\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_enganche_id}}/solicitar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_enganche_id}}", "solicitar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Debe fallar con error 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "console.log('✅ Validación de secuencia funcionando: No se puede solicitar ENGANCHE sin ALTURA aprobada');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "1️⃣ Solicitar Permiso de ALTURA",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tecnico_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Solicito permiso de altura para instalación en torre de 25 metros\",\n  \"imagenTecnico\": \"https://example.com/foto-altura-torre.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_altura_id}}/solicitar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_altura_id}}", "solicitar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Solicitud de ALTURA exitosa', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "console.log('✅ PASO 1: Permiso de ALTURA solicitado exitosamente');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2️⃣ Aprobar Permiso de ALTURA",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisor_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comentario\": \"Permiso de altura aprobado. Equipos de seguridad verificados y condiciones climáticas favorables.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_altura_id}}/aprobar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_altura_id}}", "aprobar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Aprobación de ALTURA exitosa', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "console.log('✅ PASO 2: Permiso de ALTURA aprobado exitosamente');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3️⃣ Solicitar Permiso de ENGANCHE",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tecnico_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Solicito permiso de enganche para conexión eléctrica de la torre\",\n  \"imagenTecnico\": \"https://example.com/foto-enganche-electrico.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_enganche_id}}/solicitar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_enganche_id}}", "solicitar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Solicitud de ENGANCHE exitosa', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "console.log('✅ PASO 3: Permiso de ENGANCHE solicitado exitosamente (después de ALTURA aprobada)');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "4️⃣ Aprobar Permiso de ENGANCHE",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisor_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comentario\": \"Permiso de enganche aprobado. Conexiones eléctricas verificadas y seguras.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_enganche_id}}/aprobar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_enganche_id}}", "aprobar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Aprobación de ENGANCHE exitosa', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "console.log('✅ PASO 4: Permiso de ENGANCHE aprobado exitosamente');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "5️⃣ Solicitar Permiso de CIERRE",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tecnico_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Solicito permiso de cierre para finalización del trabajo de instalación\",\n  \"imagenTecnico\": \"https://example.com/foto-trabajo-terminado.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_cierre_id}}/solicitar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_cierre_id}}", "solicitar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Solicitud de CIERRE exitosa', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "console.log('✅ PASO 5: Permiso de CIERRE solicitado exitosamente (después de ENGANCHE aprobado)');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "6️⃣ Aprobar Permiso de CIERRE (Cambio Automático a TERMINADO)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisor_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comentario\": \"Permiso de cierre aprobado. Trabajo completado satisfactoriamente y verificado.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_cierre_id}}/aprobar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_cierre_id}}", "aprobar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Aprobación de CIERRE exitosa', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "console.log('✅ PASO 6: Permiso de CIERRE aprobado - El trabajo debería cambiar automáticamente a TERMINADO');",
+                  "",
+                  "// Verificar automáticamente el estado del trabajo",
+                  "setTimeout(() => {",
+                  "    pm.sendRequest({",
+                  "        url: pm.collectionVariables.get('base_url') + '/trabajos/' + pm.collectionVariables.get('trabajo_secuencial_id'),",
+                  "        method: 'GET'",
+                  "    }, function (err, response) {",
+                  "        if (response.code === 200) {",
+                  "            const trabajo = response.json();",
+                  "            if (trabajo.estado === 'terminado' && trabajo.fechaEjecutada) {",
+                  "                console.log('🎉 ¡ÉXITO! El trabajo cambió automáticamente a TERMINADO');",
+                  "                console.log('📅 Fecha de ejecución establecida:', trabajo.fechaEjecutada);",
+                  "            } else {",
+                  "                console.log('⚠️ El trabajo no cambió a TERMINADO automáticamente');",
+                  "                console.log('Estado actual:', trabajo.estado);",
+                  "            }",
+                  "        }",
+                  "    });",
+                  "}, 1000);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "🎯 Verificar Estado Final del Trabajo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/trabajos/{{trabajo_secuencial_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["trabajos", "{{trabajo_secuencial_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Trabajo debe estar TERMINADO', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.estado).to.eql('terminado');",
+                  "    pm.expect(response.fechaEjecutada).to.not.be.null;",
+                  "});",
+                  "",
+                  "const trabajo = pm.response.json();",
+                  "console.log('🎯 VERIFICACIÓN FINAL:');",
+                  "console.log('📝 Título:', trabajo.titulo);",
+                  "console.log('📊 Estado:', trabajo.estado);",
+                  "console.log('📅 Fecha creación:', trabajo.fechaCreacion);",
+                  "console.log('📅 Fecha ejecución:', trabajo.fechaEjecutada);",
+                  "",
+                  "console.log('📋 Estado de permisos:');",
+                  "trabajo.permisos.forEach(permiso => {",
+                  "    console.log(`   - ${permiso.tipo}: ${permiso.estado}`);",
+                  "    if (permiso.comentarioSupervisor) {",
+                  "        console.log(`     💬 ${permiso.comentarioSupervisor}`);",
+                  "    }",
+                  "});",
+                  "",
+                  "if (trabajo.estado === 'terminado' && trabajo.fechaEjecutada) {",
+                  "    console.log('🎉 ¡FLUJO SECUENCIAL COMPLETADO EXITOSAMENTE!');",
+                  "    console.log('✅ Secuencia: altura → enganche → cierre');",
+                  "    console.log('✅ Cambio automático a TERMINADO');",
+                  "    console.log('✅ Fecha de ejecución establecida');",
+                  "} else {",
+                  "    console.log('❌ El flujo no se completó correctamente');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🔧 Permisos - Acciones Individuales",
+      "item": [
+        {
+          "name": "📤 Solicitar Permiso Individual",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tecnico_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Solicitud individual de permiso\",\n  \"imagenTecnico\": \"https://example.com/foto-individual.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_altura_id}}/solicitar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_altura_id}}", "solicitar"]
+            }
+          }
+        },
+        {
+          "name": "✅ Aprobar Permiso Individual",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisor_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comentario\": \"Permiso aprobado individualmente\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_altura_id}}/aprobar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_altura_id}}", "aprobar"]
+            }
+          }
+        },
+        {
+          "name": "❌ Rechazar Permiso Individual",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisor_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comentario\": \"Permiso rechazado. Condiciones de seguridad no cumplidas. Revisar equipos de protección.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_altura_id}}/rechazar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_altura_id}}", "rechazar"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧪 Pruebas de Validación",
+      "item": [
+        {
+          "name": "🚫 Técnico NO puede aprobar permisos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tecnico_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comentario\": \"Intento de aprobación por técnico - debe fallar\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_altura_id}}/aprobar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_altura_id}}", "aprobar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Debe fallar - técnico no puede aprobar', function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});",
+                  "console.log('✅ Validación de roles funcionando: Técnico no puede aprobar permisos');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "🚫 Supervisor NO puede solicitar permisos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisor_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Intento de solicitud por supervisor - debe fallar\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_altura_id}}/solicitar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_altura_id}}", "solicitar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Debe fallar - supervisor no puede solicitar', function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});",
+                  "console.log('✅ Validación de roles funcionando: Supervisor no puede solicitar permisos');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "🚫 No se puede solicitar CIERRE sin ENGANCHE",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tecnico_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Intento de solicitar cierre sin enganche - debe fallar\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_cierre_id}}/solicitar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_cierre_id}}", "solicitar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Debe fallar - no se puede solicitar CIERRE sin ENGANCHE', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "console.log('✅ Validación de secuencia funcionando: No se puede solicitar CIERRE sin ENGANCHE aprobado');"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📊 Reportes y Estadísticas",
+      "item": [
+        {
+          "name": "📊 Resumen de Todos los Trabajos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/trabajos",
+              "host": ["{{base_url}}"],
+              "path": ["trabajos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const trabajos = pm.response.json();",
+                  "console.log('📊 RESUMEN DE TRABAJOS:');",
+                  "console.log('Total de trabajos:', trabajos.length);",
+                  "",
+                  "const estadisticas = {",
+                  "    pendientes: 0,",
+                  "    terminados: 0,",
+                  "    cancelados: 0",
+                  "};",
+                  "",
+                  "trabajos.forEach(trabajo => {",
+                  "    if (trabajo.estado === 'pendiente') estadisticas.pendientes++;",
+                  "    else if (trabajo.estado === 'terminado') estadisticas.terminados++;",
+                  "    else if (trabajo.estado === 'cancelado') estadisticas.cancelados++;",
+                  "});",
+                  "",
+                  "console.log('📈 Estadísticas:');",
+                  "console.log('  - Pendientes:', estadisticas.pendientes);",
+                  "console.log('  - Terminados:', estadisticas.terminados);",
+                  "console.log('  - Cancelados:', estadisticas.cancelados);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "📊 Resumen de Todos los Permisos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/permisos",
+              "host": ["{{base_url}}"],
+              "path": ["permisos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const permisos = pm.response.json();",
+                  "console.log('📊 RESUMEN DE PERMISOS:');",
+                  "console.log('Total de permisos:', permisos.length);",
+                  "",
+                  "const estadisticas = {",
+                  "    pendientes: 0,",
+                  "    aprobados: 0,",
+                  "    rechazados: 0,",
+                  "    altura: 0,",
+                  "    enganche: 0,",
+                  "    cierre: 0",
+                  "};",
+                  "",
+                  "permisos.forEach(permiso => {",
+                  "    // Por estado",
+                  "    if (permiso.estado === 'pendiente') estadisticas.pendientes++;",
+                  "    else if (permiso.estado === 'aprobado') estadisticas.aprobados++;",
+                  "    else if (permiso.estado === 'rechazado') estadisticas.rechazados++;",
+                  "    ",
+                  "    // Por tipo",
+                  "    if (permiso.tipo === 'altura') estadisticas.altura++;",
+                  "    else if (permiso.tipo === 'enganche') estadisticas.enganche++;",
+                  "    else if (permiso.tipo === 'cierre') estadisticas.cierre++;",
+                  "});",
+                  "",
+                  "console.log('📈 Por Estado:');",
+                  "console.log('  - Pendientes:', estadisticas.pendientes);",
+                  "console.log('  - Aprobados:', estadisticas.aprobados);",
+                  "console.log('  - Rechazados:', estadisticas.rechazados);",
+                  "",
+                  "console.log('📈 Por Tipo:');",
+                  "console.log('  - Altura:', estadisticas.altura);",
+                  "console.log('  - Enganche:', estadisticas.enganche);",
+                  "console.log('  - Cierre:', estadisticas.cierre);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
