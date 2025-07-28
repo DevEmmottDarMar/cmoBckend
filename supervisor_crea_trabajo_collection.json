@@ -1,0 +1,255 @@
+{
+  "info": {
+    "name": "👨‍💼 Supervisor Crea Trabajo",
+    "description": "Colección simple para que el supervisor cree un trabajo y se asigne a un técnico",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "supervisor_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "tecnico_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "trabajo_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Login Supervisor",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"supervisor1@demo.com\",\n  \"password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/login",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "login"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    if (response.access_token) {",
+              "        pm.collectionVariables.set('supervisor_token', response.access_token);",
+              "        console.log('✅ Token Supervisor guardado:', response.access_token.substring(0, 50) + '...');",
+              "        console.log('👤 Usuario:', response.user.name);",
+              "        console.log('📧 Email:', response.user.email);",
+              "    }",
+              "} else {",
+              "    console.log('❌ Error en login Supervisor:', pm.response.status);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔍 Obtener ID del Técnico",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/users",
+          "host": ["{{base_url}}"],
+          "path": ["users"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    const tecnico = response.data.find(user => user.email === 'tecnico1@demo.com');",
+              "    ",
+              "    if (tecnico) {",
+              "        pm.collectionVariables.set('tecnico_id', tecnico.id);",
+              "        console.log('✅ ID del técnico obtenido:');",
+              "        console.log('   👤 Nombre:', tecnico.name);",
+              "        console.log('   📧 Email:', tecnico.email);",
+              "        console.log('   🆔 ID:', tecnico.id);",
+              "    } else {",
+              "        console.log('❌ No se encontró el técnico');",
+              "    }",
+              "} else {",
+              "    console.log('❌ Error al obtener usuarios:', pm.response.status);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "➕ Crear Trabajo - Supervisor",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{supervisor_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"titulo\": \"Instalación de línea eléctrica en sector norte\",\n  \"descripcion\": \"Instalación completa de línea eléctrica de media tensión en el sector norte de la ciudad. Incluye montaje de postes, tendido de cables y conexiones.\",\n  \"observacion\": \"Requiere coordinación con el municipio y cierre de calles temporales\",\n  \"tecnicoAsignadoId\": \"{{tecnico_id}}\",\n  \"estado\": \"pendiente\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/trabajos",
+          "host": ["{{base_url}}"],
+          "path": ["trabajos"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "console.log('🔍 Verificando datos:');",
+              "console.log('   Token Supervisor:', pm.collectionVariables.get('supervisor_token').substring(0, 50) + '...');",
+              "console.log('   ID Técnico:', pm.collectionVariables.get('tecnico_id'));",
+              "",
+              "if (pm.response.code === 201) {",
+              "    const trabajo = pm.response.json();",
+              "    console.log('✅ Trabajo creado exitosamente:');",
+              "    console.log('   📋 Título:', trabajo.titulo);",
+              "    console.log('   🆔 ID:', trabajo.id);",
+              "    console.log('   👤 Técnico asignado:', trabajo.tecnicoAsignado?.name || 'No asignado');",
+              "    console.log('   📊 Estado:', trabajo.estado);",
+              "    console.log('   🔐 Permisos creados:', trabajo.permisos?.length || 0);",
+              "    ",
+              "    // Guardar ID del trabajo",
+              "    pm.collectionVariables.set('trabajo_id', trabajo.id);",
+              "    ",
+              "    // Mostrar detalles de permisos",
+              "    if (trabajo.permisos && trabajo.permisos.length > 0) {",
+              "        console.log('   📋 Permisos creados automáticamente:');",
+              "        trabajo.permisos.forEach((permiso, index) => {",
+              "            console.log('      ' + (index + 1) + '. ' + permiso.tipoPermiso?.nombre + ' - ' + permiso.estado);",
+              "        });",
+              "    }",
+              "    ",
+              "    console.log('🎉 ¡Trabajo creado y asignado exitosamente!');",
+              "    ",
+              "} else {",
+              "    console.log('❌ Error al crear trabajo:', pm.response.status);",
+              "    console.log('📄 Respuesta:', pm.response.text());",
+              "    console.log('🔍 Body enviado:', pm.request.body.raw);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "📋 Ver Trabajo Creado",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/trabajos/{{trabajo_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["trabajos", "{{trabajo_id}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const trabajo = pm.response.json();",
+              "    console.log('👁️ Detalles del trabajo creado:');",
+              "    console.log('   📋 Título:', trabajo.titulo);",
+              "    console.log('   📝 Descripción:', trabajo.descripcion);",
+              "    console.log('   👤 Técnico asignado:', trabajo.tecnicoAsignado?.name || 'No asignado');",
+              "    console.log('   📊 Estado:', trabajo.estado);",
+              "    console.log('   📅 Fecha creación:', trabajo.fechaCreacion);",
+              "    console.log('   🔐 Permisos asociados:', trabajo.permisos?.length || 0);",
+              "    ",
+              "    if (trabajo.permisos && trabajo.permisos.length > 0) {",
+              "        console.log('   📋 Detalles de permisos:');",
+              "        trabajo.permisos.forEach((permiso, index) => {",
+              "            console.log('      ' + (index + 1) + '. Tipo:', permiso.tipoPermiso?.nombre);",
+              "            console.log('         Estado:', permiso.estado);",
+              "            console.log('         ID:', permiso.id);",
+              "        });",
+              "    }",
+              "} else {",
+              "    console.log('❌ Error al obtener trabajo:', pm.response.status);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 Listar Todos los Trabajos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/trabajos",
+          "host": ["{{base_url}}"],
+          "path": ["trabajos"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    console.log('📋 Trabajos disponibles en el sistema:');",
+              "    console.log('   📊 Total de trabajos:', response.length || 0);",
+              "    ",
+              "    if (response && response.length > 0) {",
+              "        response.forEach((trabajo, index) => {",
+              "            console.log('   ' + (index + 1) + '. 📋 ' + trabajo.titulo);",
+              "            console.log('      🆔 ID:', trabajo.id);",
+              "            console.log('      👤 Técnico:', trabajo.tecnicoAsignado?.name || 'No asignado');",
+              "            console.log('      📊 Estado:', trabajo.estado);",
+              "            console.log('      🔐 Permisos:', trabajo.permisos?.length || 0);",
+              "            console.log('');",
+              "        });",
+              "    }",
+              "} else {",
+              "    console.log('❌ Error al obtener trabajos:', pm.response.status);",
+              "}"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+} 

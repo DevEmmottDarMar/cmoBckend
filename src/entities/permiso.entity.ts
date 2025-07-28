@@ -46,13 +46,14 @@ export class Permiso {
   @Column('text', { nullable: true })
   descripcion?: string;
 
-  @ApiProperty({ description: 'URL de la imagen enviada por el técnico', required: false })
-  @Column({ nullable: true })
-  imagenTecnico?: string;
-
   @ApiProperty({ description: 'Comentario del supervisor', required: false })
   @Column('text', { nullable: true })
   comentarioSupervisor?: string;
+
+  // Relación con imágenes - Un permiso puede tener múltiples imágenes
+  @ApiProperty({ description: 'Imágenes asociadas al permiso', type: () => [Imagen], required: false })
+  @OneToMany(() => Imagen, (imagen) => imagen.permiso, { eager: false })
+  imagenes?: Imagen[];
 
   @ApiProperty({ description: 'Fecha de solicitud del permiso' })
   @CreateDateColumn()

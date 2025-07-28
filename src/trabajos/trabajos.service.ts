@@ -43,7 +43,7 @@ export class TrabajosService {
 
   async findAll(): Promise<Trabajo[]> {
     return this.trabajoRepository.find({
-      relations: ['tecnicoAsignado', 'permisos', 'permisos.tecnico', 'permisos.supervisor', 'permisos.tipoPermiso', 'permisos.imagenes'],
+      relations: ['tecnicoAsignado', 'permisos', 'permisos.tecnico', 'permisos.supervisor', 'permisos.tipoPermiso'],
       order: { fechaCreacion: 'DESC' },
     });
   }
@@ -51,7 +51,7 @@ export class TrabajosService {
   async findOne(id: string): Promise<Trabajo> {
     const trabajo = await this.trabajoRepository.findOne({
       where: { id },
-      relations: ['tecnicoAsignado', 'permisos', 'permisos.tecnico', 'permisos.supervisor', 'permisos.tipoPermiso', 'permisos.imagenes'],
+      relations: ['tecnicoAsignado', 'permisos', 'permisos.tecnico', 'permisos.supervisor', 'permisos.tipoPermiso'],
     });
 
     if (!trabajo) {
@@ -64,7 +64,7 @@ export class TrabajosService {
   async findByTecnico(tecnicoId: string): Promise<Trabajo[]> {
     return this.trabajoRepository.find({
       where: { tecnicoAsignadoId: tecnicoId },
-      relations: ['tecnicoAsignado', 'permisos', 'permisos.tecnico', 'permisos.supervisor', 'permisos.tipoPermiso', 'permisos.imagenes'],
+      relations: ['tecnicoAsignado', 'permisos', 'permisos.tecnico', 'permisos.supervisor', 'permisos.tipoPermiso'],
       order: { fechaCreacion: 'DESC' },
     });
   }

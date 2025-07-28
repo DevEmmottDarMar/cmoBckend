@@ -1,0 +1,1283 @@
+{
+  "info": {
+    "name": "🔄 Flujos Completos - Project EQU",
+    "description": "Colección completa organizada en flujos separados para probar toda la funcionalidad del sistema",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "tecnico_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "supervisor_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "admin_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "tecnico_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "supervisor_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "trabajo_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "permiso_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 FLUJO 1: Autenticación de Usuarios",
+      "item": [
+        {
+          "name": "🔐 Login - Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin1@demo.com\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.access_token) {",
+                  "        pm.collectionVariables.set('admin_token', response.access_token);",
+                  "        console.log('✅ Token Admin guardado:', response.access_token.substring(0, 50) + '...');",
+                  "        console.log('👤 Usuario:', response.user.name);",
+                  "        console.log('📧 Email:', response.user.email);",
+                  "    }",
+                  "    if (response.user && response.user.id) {",
+                  "        pm.collectionVariables.set('admin_id', response.user.id);",
+                  "        console.log('💾 ID Admin guardado:', response.user.id);",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Error en login Admin:', pm.response.status);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "🔐 Login - Técnico",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tecnico1@demo.com\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.access_token) {",
+                  "        pm.collectionVariables.set('tecnico_token', response.access_token);",
+                  "        console.log('✅ Token Técnico guardado:', response.access_token.substring(0, 50) + '...');",
+                  "        console.log('👤 Usuario:', response.user.name);",
+                  "        console.log('📧 Email:', response.user.email);",
+                  "    }",
+                  "    if (response.user && response.user.id) {",
+                  "        pm.collectionVariables.set('tecnico_id', response.user.id);",
+                  "        console.log('💾 ID Técnico guardado:', response.user.id);",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Error en login Técnico:', pm.response.status);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "🔐 Login - Supervisor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"supervisor1@demo.com\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.access_token) {",
+                  "        pm.collectionVariables.set('supervisor_token', response.access_token);",
+                  "        console.log('✅ Token Supervisor guardado:', response.access_token.substring(0, 50) + '...');",
+                  "        console.log('👤 Usuario:', response.user.name);",
+                  "        console.log('📧 Email:', response.user.email);",
+                  "    }",
+                  "    if (response.user && response.user.id) {",
+                  "        pm.collectionVariables.set('supervisor_id', response.user.id);",
+                  "        console.log('💾 ID Supervisor guardado:', response.user.id);",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Error en login Supervisor:', pm.response.status);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "📋 Verificar Usuarios del Sistema",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": ["{{base_url}}"],
+              "path": ["users"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('📋 Usuarios disponibles en el sistema:');",
+                  "    response.data.forEach(user => {",
+                  "        console.log('   👤 ' + user.name + ' (' + user.email + ') - ID: ' + user.id);",
+                  "    });",
+                  "} else {",
+                  "    console.log('❌ Error al obtener usuarios:', pm.response.status);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏗️ FLUJO 2: Supervisor Crea Trabajo",
+      "item": [
+        {
+          "name": "➕ Crear Trabajo - Supervisor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisor_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Instalación de línea eléctrica en sector norte\",\n  \"descripcion\": \"Instalación completa de línea eléctrica de media tensión en el sector norte de la ciudad. Incluye montaje de postes, tendido de cables y conexiones.\",\n  \"observacion\": \"Requiere coordinación con el municipio y cierre de calles temporales\",\n  \"tecnicoAsignadoId\": \"{{tecnico_id}}\",\n  \"estado\": \"pendiente\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/trabajos",
+              "host": ["{{base_url}}"],
+              "path": ["trabajos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🔍 Verificando datos:');",
+                  "console.log('   Token Supervisor:', pm.collectionVariables.get('supervisor_token').substring(0, 50) + '...');",
+                  "console.log('   ID Técnico:', pm.collectionVariables.get('tecnico_id'));",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    const trabajo = pm.response.json();",
+                  "    console.log('✅ Trabajo creado exitosamente:');",
+                  "    console.log('   📋 Título:', trabajo.titulo);",
+                  "    console.log('   🆔 ID:', trabajo.id);",
+                  "    console.log('   👤 Técnico asignado:', trabajo.tecnicoAsignado?.name || 'No asignado');",
+                  "    console.log('   📊 Estado:', trabajo.estado);",
+                  "    console.log('   🔐 Permisos creados:', trabajo.permisos?.length || 0);",
+                  "    ",
+                  "    // Guardar ID del trabajo",
+                  "    pm.collectionVariables.set('trabajo_id', trabajo.id);",
+                  "    ",
+                  "    // Mostrar detalles de permisos",
+                  "    if (trabajo.permisos && trabajo.permisos.length > 0) {",
+                  "        console.log('   📋 Permisos creados automáticamente:');",
+                  "        trabajo.permisos.forEach((permiso, index) => {",
+                  "            console.log('      ' + (index + 1) + '. ' + permiso.tipoPermiso?.nombre + ' - ' + permiso.estado);",
+                  "        });",
+                  "    }",
+                  "    ",
+                  "    console.log('🎉 ¡Trabajo creado y asignado exitosamente!');",
+                  "    ",
+                  "} else {",
+                  "    console.log('❌ Error al crear trabajo:', pm.response.status);",
+                  "    console.log('📄 Respuesta:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "👁️ Ver Trabajo Creado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/trabajos/{{trabajo_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["trabajos", "{{trabajo_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const trabajo = pm.response.json();",
+                  "    console.log('👁️ Detalles del trabajo creado:');",
+                  "    console.log('   📋 Título:', trabajo.titulo);",
+                  "    console.log('   📝 Descripción:', trabajo.descripcion);",
+                  "    console.log('   👤 Técnico asignado:', trabajo.tecnicoAsignado?.name || 'No asignado');",
+                  "    console.log('   📊 Estado:', trabajo.estado);",
+                  "    console.log('   📅 Fecha creación:', trabajo.fechaCreacion);",
+                  "    console.log('   🔐 Permisos asociados:', trabajo.permisos?.length || 0);",
+                  "    ",
+                  "    if (trabajo.permisos && trabajo.permisos.length > 0) {",
+                  "        console.log('   📋 Detalles de permisos:');",
+                  "        trabajo.permisos.forEach((permiso, index) => {",
+                  "            console.log('      ' + (index + 1) + '. Tipo:', permiso.tipoPermiso?.nombre);",
+                  "            console.log('         Estado:', permiso.estado);",
+                  "            console.log('         ID:', permiso.id);",
+                  "        });",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Error al obtener trabajo:', pm.response.status);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "👤 FLUJO 3: Técnico Ve Sus Trabajos",
+      "item": [
+        {
+          "name": "👤 Mis Trabajos - Técnico",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tecnico_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/trabajos/mis-trabajos",
+              "host": ["{{base_url}}"],
+              "path": ["trabajos", "mis-trabajos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('👤 Mis trabajos asignados:');",
+                  "    console.log('   📊 Total de trabajos:', response.length || 0);",
+                  "    ",
+                  "    if (response && response.length > 0) {",
+                  "        response.forEach((trabajo, index) => {",
+                  "            console.log('   ' + (index + 1) + '. 📋 ' + trabajo.titulo);",
+                  "            console.log('      🆔 ID:', trabajo.id);",
+                  "            console.log('      📊 Estado:', trabajo.estado);",
+                  "            console.log('      🔐 Permisos pendientes:', trabajo.permisos?.filter(p => p.estado === 'pendiente').length || 0);",
+                  "            console.log('      🔐 Permisos totales:', trabajo.permisos?.length || 0);",
+                  "        });",
+                  "    } else {",
+                  "        console.log('   📭 No tienes trabajos asignados');",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Error al obtener mis trabajos:', pm.response.status);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📊 FLUJO 4: Ver Todos los Trabajos",
+      "item": [
+        {
+          "name": "📋 Listar Todos los Trabajos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/trabajos",
+              "host": ["{{base_url}}"],
+              "path": ["trabajos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('📋 Trabajos disponibles en el sistema:');",
+                  "    console.log('   📊 Total de trabajos:', response.length || 0);",
+                  "    ",
+                  "    if (response && response.length > 0) {",
+                  "        response.forEach((trabajo, index) => {",
+                  "            console.log('   ' + (index + 1) + '. 📋 ' + trabajo.titulo);",
+                  "            console.log('      🆔 ID:', trabajo.id);",
+                  "            console.log('      👤 Técnico:', trabajo.tecnicoAsignado?.name || 'No asignado');",
+                  "            console.log('      📊 Estado:', trabajo.estado);",
+                  "            console.log('      🔐 Permisos:', trabajo.permisos?.length || 0);",
+                  "            console.log('');",
+                  "        });",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Error al obtener trabajos:', pm.response.status);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🎭 FLUJO 5: Gestión de Roles",
+      "item": [
+        {
+          "name": "📋 Listar Roles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/roles",
+              "host": ["{{base_url}}"],
+              "path": ["roles"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('🎭 Roles disponibles en el sistema:');",
+                  "    console.log('   📊 Total de roles:', response.data?.length || 0);",
+                  "    ",
+                  "    if (response.data && response.data.length > 0) {",
+                  "        response.data.forEach((role, index) => {",
+                  "            console.log('   ' + (index + 1) + '. 🎭 ' + role.name);",
+                  "            console.log('      🆔 ID:', role.id);",
+                  "            console.log('      📝 Descripción:', role.description);",
+                  "            console.log('      👥 Usuarios:', role.users?.length || 0);",
+                  "        });",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Error al obtener roles:', pm.response.status);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🔐 FLUJO 6: Gestión de Permisos",
+      "item": [
+        {
+          "name": "📋 Listar Tipos de Permiso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tipos-permiso",
+              "host": ["{{base_url}}"],
+              "path": ["tipos-permiso"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('🔐 Tipos de permiso disponibles:');",
+                  "    console.log('   📊 Total de tipos:', response.length || 0);",
+                  "    ",
+                  "    if (response && response.length > 0) {",
+                  "        response.forEach((tipo, index) => {",
+                  "            console.log('   ' + (index + 1) + '. 🔐 ' + tipo.nombre);",
+                  "            console.log('      🆔 ID:', tipo.id);",
+                  "            console.log('      📝 Descripción:', tipo.descripcion);",
+                  "            console.log('      📊 Orden:', tipo.orden);",
+                  "            console.log('      ✅ Activo:', tipo.activo);",
+                  "            ",
+                  "            // Guardar ID del primer permiso (altura) para uso posterior",
+                  "            if (tipo.orden === 1) {",
+                  "                pm.collectionVariables.set('permiso_altura_id', tipo.id);",
+                  "                console.log('💾 ID Permiso Altura guardado:', tipo.id);",
+                  "            }",
+                  "        });",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Error al obtener tipos de permiso:', pm.response.status);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📸 FLUJO 7: Técnico Solicita Permiso de Altura con Imagen Real",
+      "item": [
+        {
+          "name": "🔍 Obtener Permisos del Trabajo (para imagen de altura)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/permisos/trabajo/{{trabajo_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "trabajo", "{{trabajo_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('🔍 Permisos del trabajo para imagen de altura:');",
+                  "    console.log('   📊 Total de permisos:', response.length || 0);",
+                  "    ",
+                  "    if (response && response.length > 0) {",
+                  "        response.forEach((permiso, index) => {",
+                  "            console.log('   ' + (index + 1) + '. 🔐 ' + permiso.tipoPermiso?.nombre);",
+                  "            console.log('      🆔 ID:', permiso.id);",
+                  "            console.log('      📊 Estado:', permiso.estado);",
+                  "            ",
+                  "            // Guardar ID del permiso de altura para solicitar con imagen",
+                  "            if (permiso.tipoPermiso?.orden === 1) {",
+                  "                pm.collectionVariables.set('permiso_altura_id', permiso.id);",
+                  "                console.log('💾 ID Permiso Altura guardado para imagen:', permiso.id);",
+                  "            }",
+                  "        });",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Error al obtener permisos del trabajo:', pm.response.status);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "📤 Técnico Solicita Permiso de Altura con Imagen",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tecnico_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "descripcion",
+                  "value": "Solicito permiso de altura para trabajos en postes de 12 metros. Adjunto imagen del área de trabajo, equipos de seguridad verificados y zona delimitada.",
+                  "type": "text"
+                },
+                {
+                  "key": "imagen",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_altura_id}}/solicitar-con-imagen",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_altura_id}}", "solicitar-con-imagen"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🔍 Verificando datos:');",
+                  "console.log('   Token Técnico:', pm.collectionVariables.get('tecnico_token').substring(0, 50) + '...');",
+                  "console.log('   ID Permiso Altura:', pm.collectionVariables.get('permiso_altura_id'));",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const permiso = pm.response.json();",
+                  "    console.log('✅ Permiso de altura solicitado con imagen exitosamente:');",
+                  "    console.log('   🔐 Tipo:', permiso.tipoPermiso?.nombre);",
+                  "    console.log('   🆔 ID:', permiso.id);",
+                  "    console.log('   📊 Estado:', permiso.estado);",
+                  "    console.log('   📝 Descripción:', permiso.descripcion);",
+                  "    console.log('   👤 Técnico:', permiso.tecnico?.name || 'No asignado');",
+                  "    console.log('   📅 Fecha solicitud:', permiso.fechaSolicitud);",
+                  "    ",
+                  "    if (permiso.imagenes && permiso.imagenes.length > 0) {",
+                  "        console.log('   🖼️ Imágenes asociadas:');",
+                  "        permiso.imagenes.forEach((imagen, index) => {",
+                  "            console.log('      ' + (index + 1) + '. 📸 ' + imagen.nombre);",
+                  "            console.log('         🆔 ID:', imagen.id);",
+                  "            console.log('         🔗 URL:', imagen.url.substring(0, 50) + '...');",
+                  "            console.log('         📊 Tamaño:', imagen.tamaño + ' bytes');",
+                  "            console.log('         📋 Tipo:', imagen.mimeType);",
+                  "        });",
+                  "    } else {",
+                  "        console.log('   📭 No hay imágenes asociadas');",
+                  "    }",
+                  "    ",
+                  "    console.log('🎉 ¡Permiso de altura solicitado con imagen! Pendiente de aprobación del supervisor.');",
+                  "    ",
+                  "} else {",
+                  "    console.log('❌ Error al solicitar permiso con imagen:', pm.response.status);",
+                  "    console.log('📄 Respuesta:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "👤 Ver Mis Permisos - Técnico",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tecnico_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/permisos/mis-permisos",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "mis-permisos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('👤 Mis permisos solicitados:');",
+                  "    console.log('   📊 Total de permisos:', response.length || 0);",
+                  "    ",
+                  "    if (response && response.length > 0) {",
+                  "        response.forEach((permiso, index) => {",
+                  "            console.log('   ' + (index + 1) + '. 🔐 ' + permiso.tipoPermiso?.nombre);",
+                  "            console.log('      🆔 ID:', permiso.id);",
+                  "            console.log('      📊 Estado:', permiso.estado);",
+                  "            console.log('      📝 Descripción:', permiso.descripcion || 'Sin descripción');",
+                  "            console.log('      📅 Fecha solicitud:', permiso.fechaSolicitud);",
+                  "            console.log('      📋 Trabajo:', permiso.trabajo?.titulo || 'Sin trabajo');",
+                  "            ",
+                  "            if (permiso.imagenes && permiso.imagenes.length > 0) {",
+                  "                console.log('      🖼️ Imágenes:', permiso.imagenes.length);",
+                  "            }",
+                  "        });",
+                  "    } else {",
+                  "        console.log('   📭 No tienes permisos solicitados');",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Error al obtener mis permisos:', pm.response.status);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "✅ FLUJO 8: Supervisor Aprueba Permiso de Altura",
+      "item": [
+        {
+          "name": "📋 Ver Permisos Pendientes - Supervisor",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/permisos/pendientes",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "pendientes"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('📋 Permisos pendientes de aprobación:');",
+                  "    console.log('   📊 Total de permisos pendientes:', response.length || 0);",
+                  "    ",
+                  "    if (response && response.length > 0) {",
+                  "        response.forEach((permiso, index) => {",
+                  "            console.log('   ' + (index + 1) + '. 🔐 ' + permiso.tipoPermiso?.nombre);",
+                  "            console.log('      🆔 ID:', permiso.id);",
+                  "            console.log('      👤 Técnico:', permiso.tecnico?.name || 'No asignado');",
+                  "            console.log('      📝 Descripción:', permiso.descripcion || 'Sin descripción');",
+                  "            console.log('      📅 Fecha solicitud:', permiso.fechaSolicitud);",
+                  "            console.log('      📋 Trabajo:', permiso.trabajo?.titulo || 'Sin trabajo');",
+                  "            ",
+                  "            // Guardar ID del permiso de altura para aprobar",
+                  "            if (permiso.tipoPermiso?.orden === 1) {",
+                  "                pm.collectionVariables.set('permiso_altura_id', permiso.id);",
+                  "                console.log('💾 ID Permiso Altura guardado para aprobar:', permiso.id);",
+                  "            }",
+                  "        });",
+                  "    } else {",
+                  "        console.log('   📭 No hay permisos pendientes de aprobación');",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Error al obtener permisos pendientes:', pm.response.status);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "✅ Supervisor Aprueba Permiso de Altura",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisor_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comentario\": \"Permiso APROBADO. Verificar que el técnico use EPP completo (casco, arnés, botas de seguridad) y que la zona esté correctamente delimitada.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_altura_id}}/aprobar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_altura_id}}", "aprobar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🔍 Verificando datos:');",
+                  "console.log('   Token Supervisor:', pm.collectionVariables.get('supervisor_token').substring(0, 50) + '...');",
+                  "console.log('   ID Permiso Altura:', pm.collectionVariables.get('permiso_altura_id'));",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const permiso = pm.response.json();",
+                  "    console.log('✅ Permiso de altura aprobado exitosamente:');",
+                  "    console.log('   🔐 Tipo:', permiso.tipoPermiso?.nombre);",
+                  "    console.log('   🆔 ID:', permiso.id);",
+                  "    console.log('   📊 Estado:', permiso.estado);",
+                  "    console.log('   📝 Descripción técnico:', permiso.descripcion);",
+                  "    console.log('   💬 Comentario supervisor:', permiso.comentarioSupervisor);",
+                  "    console.log('   👤 Técnico:', permiso.tecnico?.name || 'No asignado');",
+                  "    console.log('   👨‍💼 Supervisor:', permiso.supervisor?.name || 'No asignado');",
+                  "    console.log('   📅 Fecha solicitud:', permiso.fechaSolicitud);",
+                  "    console.log('   📅 Fecha respuesta:', permiso.fechaRespuesta);",
+                  "    ",
+                  "    console.log('🎉 ¡Permiso de altura aprobado! El técnico puede proceder con el trabajo.');",
+                  "    ",
+                  "} else {",
+                  "    console.log('❌ Error al aprobar permiso:', pm.response.status);",
+                  "    console.log('📄 Respuesta:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "👁️ Ver Permiso Aprobado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_altura_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_altura_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const permiso = pm.response.json();",
+                  "    console.log('👁️ Detalles del permiso aprobado:');",
+                  "    console.log('   🔐 Tipo:', permiso.tipoPermiso?.nombre);",
+                  "    console.log('   🆔 ID:', permiso.id);",
+                  "    console.log('   📊 Estado:', permiso.estado);",
+                  "    console.log('   📝 Descripción técnico:', permiso.descripcion);",
+                  "    console.log('   💬 Comentario supervisor:', permiso.comentarioSupervisor);",
+                  "    console.log('   👤 Técnico:', permiso.tecnico?.name || 'No asignado');",
+                  "    console.log('   👨‍💼 Supervisor:', permiso.supervisor?.name || 'No asignado');",
+                  "    console.log('   📅 Fecha solicitud:', permiso.fechaSolicitud);",
+                  "    console.log('   📅 Fecha respuesta:', permiso.fechaRespuesta);",
+                  "    console.log('   📋 Trabajo:', permiso.trabajo?.titulo || 'Sin trabajo');",
+                  "    ",
+                  "    if (permiso.estado === 'aprobado') {",
+                  "        console.log('🎉 ¡Flujo completado exitosamente!');",
+                  "        console.log('💡 El técnico puede proceder con el trabajo de altura.');",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Error al obtener permiso:', pm.response.status);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "🔌 FLUJO 10: Técnico Solicita Permiso de Enganche (Después de Altura)",
+      "item": [
+        {
+          "name": "🔍 Obtener Permisos del Trabajo (para enganche)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/permisos/trabajo/{{trabajo_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "trabajo", "{{trabajo_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('🔍 Permisos del trabajo para enganche:');",
+                  "    console.log('   📊 Total de permisos:', response.length || 0);",
+                  "    ",
+                  "    if (response && response.length > 0) {",
+                  "        response.forEach((permiso, index) => {",
+                  "            console.log('   ' + (index + 1) + '. 🔐 ' + permiso.tipoPermiso?.nombre);",
+                  "            console.log('      🆔 ID:', permiso.id);",
+                  "            console.log('      📊 Estado:', permiso.estado);",
+                  "            ",
+                  "            // Guardar ID del permiso de enganche (orden 2)",
+                  "            if (permiso.tipoPermiso?.orden === 2) {",
+                  "                pm.collectionVariables.set('permiso_enganche_id', permiso.id);",
+                  "                console.log('💾 ID Permiso Enganche guardado:', permiso.id);",
+                  "            }",
+                  "        });",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Error al obtener permisos del trabajo:', pm.response.status);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "📤 Técnico Solicita Permiso de Enganche",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tecnico_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Solicito permiso de enganche para conectar equipos de alta tensión. El permiso de altura ya fue aprobado y procedo con la conexión eléctrica.\",\n  \"imagenUrl\": \"https://ejemplo.com/imagen-enganche.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_enganche_id}}/solicitar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_enganche_id}}", "solicitar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🔍 Verificando datos:');",
+                  "console.log('   Token Técnico:', pm.collectionVariables.get('tecnico_token').substring(0, 50) + '...');",
+                  "console.log('   ID Permiso Enganche:', pm.collectionVariables.get('permiso_enganche_id'));",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const permiso = pm.response.json();",
+                  "    console.log('✅ Permiso de enganche solicitado exitosamente:');",
+                  "    console.log('   🔐 Tipo:', permiso.tipoPermiso?.nombre);",
+                  "    console.log('   🆔 ID:', permiso.id);",
+                  "    console.log('   📊 Estado:', permiso.estado);",
+                  "    console.log('   📝 Descripción:', permiso.descripcion);",
+                  "    console.log('   👤 Técnico:', permiso.tecnico?.name || 'No asignado');",
+                  "    console.log('   📅 Fecha solicitud:', permiso.fechaSolicitud);",
+                  "    ",
+                  "    console.log('🎉 ¡Permiso de enganche solicitado! Pendiente de aprobación del supervisor.');",
+                  "    ",
+                  "} else {",
+                  "    console.log('❌ Error al solicitar permiso:', pm.response.status);",
+                  "    console.log('📄 Respuesta:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "✅ FLUJO 11: Supervisor Aprueba Permiso de Enganche",
+      "item": [
+        {
+          "name": "📋 Ver Permisos Pendientes - Supervisor (Enganche)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/permisos/pendientes",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "pendientes"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('📋 Permisos pendientes de aprobación (Enganche):');",
+                  "    console.log('   📊 Total de permisos pendientes:', response.length || 0);",
+                  "    ",
+                  "    if (response && response.length > 0) {",
+                  "        response.forEach((permiso, index) => {",
+                  "            console.log('   ' + (index + 1) + '. 🔐 ' + permiso.tipoPermiso?.nombre);",
+                  "            console.log('      🆔 ID:', permiso.id);",
+                  "            console.log('      👤 Técnico:', permiso.tecnico?.name || 'No asignado');",
+                  "            console.log('      📝 Descripción:', permiso.descripcion || 'Sin descripción');",
+                  "            console.log('      📅 Fecha solicitud:', permiso.fechaSolicitud);",
+                  "            ",
+                  "            // Guardar ID del permiso de enganche para aprobar",
+                  "            if (permiso.tipoPermiso?.orden === 2) {",
+                  "                pm.collectionVariables.set('permiso_enganche_id', permiso.id);",
+                  "                console.log('💾 ID Permiso Enganche guardado para aprobar:', permiso.id);",
+                  "            }",
+                  "        });",
+                  "    } else {",
+                  "        console.log('   📭 No hay permisos pendientes de aprobación');",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Error al obtener permisos pendientes:', pm.response.status);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "✅ Supervisor Aprueba Permiso de Enganche",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisor_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comentario\": \"Permiso de enganche APROBADO. Verificar que la conexión eléctrica esté correctamente instalada y que todos los equipos de seguridad estén funcionando.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_enganche_id}}/aprobar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_enganche_id}}", "aprobar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🔍 Verificando datos:');",
+                  "console.log('   Token Supervisor:', pm.collectionVariables.get('supervisor_token').substring(0, 50) + '...');",
+                  "console.log('   ID Permiso Enganche:', pm.collectionVariables.get('permiso_enganche_id'));",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const permiso = pm.response.json();",
+                  "    console.log('✅ Permiso de enganche aprobado exitosamente:');",
+                  "    console.log('   🔐 Tipo:', permiso.tipoPermiso?.nombre);",
+                  "    console.log('   🆔 ID:', permiso.id);",
+                  "    console.log('   📊 Estado:', permiso.estado);",
+                  "    console.log('   📝 Descripción técnico:', permiso.descripcion);",
+                  "    console.log('   💬 Comentario supervisor:', permiso.comentarioSupervisor);",
+                  "    console.log('   👤 Técnico:', permiso.tecnico?.name || 'No asignado');",
+                  "    console.log('   👨‍💼 Supervisor:', permiso.supervisor?.name || 'No asignado');",
+                  "    console.log('   📅 Fecha solicitud:', permiso.fechaSolicitud);",
+                  "    console.log('   📅 Fecha respuesta:', permiso.fechaRespuesta);",
+                  "    ",
+                  "    console.log('🎉 ¡Permiso de enganche aprobado! El técnico puede proceder con el trabajo.');",
+                  "    ",
+                  "} else {",
+                  "    console.log('❌ Error al aprobar permiso:', pm.response.status);",
+                  "    console.log('📄 Respuesta:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🔒 FLUJO 12: Técnico Solicita Permiso de Cierre (Final)",
+      "item": [
+        {
+          "name": "🔍 Obtener Permisos del Trabajo (para cierre)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/permisos/trabajo/{{trabajo_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "trabajo", "{{trabajo_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('🔍 Permisos del trabajo para cierre:');",
+                  "    console.log('   📊 Total de permisos:', response.length || 0);",
+                  "    ",
+                  "    if (response && response.length > 0) {",
+                  "        response.forEach((permiso, index) => {",
+                  "            console.log('   ' + (index + 1) + '. 🔐 ' + permiso.tipoPermiso?.nombre);",
+                  "            console.log('      🆔 ID:', permiso.id);",
+                  "            console.log('      📊 Estado:', permiso.estado);",
+                  "            ",
+                  "            // Guardar ID del permiso de cierre (orden 3)",
+                  "            if (permiso.tipoPermiso?.orden === 3) {",
+                  "                pm.collectionVariables.set('permiso_cierre_id', permiso.id);",
+                  "                console.log('💾 ID Permiso Cierre guardado:', permiso.id);",
+                  "            }",
+                  "        });",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Error al obtener permisos del trabajo:', pm.response.status);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "📤 Técnico Solicita Permiso de Cierre",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tecnico_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Solicito permiso de cierre para finalizar el trabajo. Todos los permisos anteriores han sido aprobados y el trabajo está completado exitosamente.\",\n  \"imagenUrl\": \"https://ejemplo.com/imagen-trabajo-terminado.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_cierre_id}}/solicitar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_cierre_id}}", "solicitar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🔍 Verificando datos:');",
+                  "console.log('   Token Técnico:', pm.collectionVariables.get('tecnico_token').substring(0, 50) + '...');",
+                  "console.log('   ID Permiso Cierre:', pm.collectionVariables.get('permiso_cierre_id'));",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const permiso = pm.response.json();",
+                  "    console.log('✅ Permiso de cierre solicitado exitosamente:');",
+                  "    console.log('   🔐 Tipo:', permiso.tipoPermiso?.nombre);",
+                  "    console.log('   🆔 ID:', permiso.id);",
+                  "    console.log('   📊 Estado:', permiso.estado);",
+                  "    console.log('   📝 Descripción:', permiso.descripcion);",
+                  "    console.log('   👤 Técnico:', permiso.tecnico?.name || 'No asignado');",
+                  "    console.log('   📅 Fecha solicitud:', permiso.fechaSolicitud);",
+                  "    ",
+                  "    console.log('🎉 ¡Permiso de cierre solicitado! Pendiente de aprobación del supervisor.');",
+                  "    ",
+                  "} else {",
+                  "    console.log('❌ Error al solicitar permiso:', pm.response.status);",
+                  "    console.log('📄 Respuesta:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "✅ FLUJO 13: Supervisor Aprueba Permiso de Cierre (Final)",
+      "item": [
+        {
+          "name": "📋 Ver Permisos Pendientes - Supervisor (Cierre)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/permisos/pendientes",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "pendientes"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('📋 Permisos pendientes de aprobación (Cierre):');",
+                  "    console.log('   📊 Total de permisos pendientes:', response.length || 0);",
+                  "    ",
+                  "    if (response && response.length > 0) {",
+                  "        response.forEach((permiso, index) => {",
+                  "            console.log('   ' + (index + 1) + '. 🔐 ' + permiso.tipoPermiso?.nombre);",
+                  "            console.log('      🆔 ID:', permiso.id);",
+                  "            console.log('      👤 Técnico:', permiso.tecnico?.name || 'No asignado');",
+                  "            console.log('      📝 Descripción:', permiso.descripcion || 'Sin descripción');",
+                  "            console.log('      📅 Fecha solicitud:', permiso.fechaSolicitud);",
+                  "            ",
+                  "            // Guardar ID del permiso de cierre para aprobar",
+                  "            if (permiso.tipoPermiso?.orden === 3) {",
+                  "                pm.collectionVariables.set('permiso_cierre_id', permiso.id);",
+                  "                console.log('💾 ID Permiso Cierre guardado para aprobar:', permiso.id);",
+                  "            }",
+                  "        });",
+                  "    } else {",
+                  "        console.log('   📭 No hay permisos pendientes de aprobación');",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Error al obtener permisos pendientes:', pm.response.status);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "✅ Supervisor Aprueba Permiso de Cierre",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisor_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comentario\": \"Permiso de cierre APROBADO. Trabajo completado exitosamente. Verificar que toda la instalación esté funcionando correctamente y que la zona esté limpia.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/permisos/{{permiso_cierre_id}}/aprobar",
+              "host": ["{{base_url}}"],
+              "path": ["permisos", "{{permiso_cierre_id}}", "aprobar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🔍 Verificando datos:');",
+                  "console.log('   Token Supervisor:', pm.collectionVariables.get('supervisor_token').substring(0, 50) + '...');",
+                  "console.log('   ID Permiso Cierre:', pm.collectionVariables.get('permiso_cierre_id'));",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const permiso = pm.response.json();",
+                  "    console.log('✅ Permiso de cierre aprobado exitosamente:');",
+                  "    console.log('   🔐 Tipo:', permiso.tipoPermiso?.nombre);",
+                  "    console.log('   🆔 ID:', permiso.id);",
+                  "    console.log('   📊 Estado:', permiso.estado);",
+                  "    console.log('   📝 Descripción técnico:', permiso.descripcion);",
+                  "    console.log('   💬 Comentario supervisor:', permiso.comentarioSupervisor);",
+                  "    console.log('   👤 Técnico:', permiso.tecnico?.name || 'No asignado');",
+                  "    console.log('   👨‍💼 Supervisor:', permiso.supervisor?.name || 'No asignado');",
+                  "    console.log('   📅 Fecha solicitud:', permiso.fechaSolicitud);",
+                  "    console.log('   📅 Fecha respuesta:', permiso.fechaRespuesta);",
+                  "    ",
+                  "    console.log('🎉 ¡Permiso de cierre aprobado! El trabajo está completamente terminado.');",
+                  "    console.log('🏁 ¡FLUJO COMPLETO TERMINADO EXITOSAMENTE!');",
+                  "    console.log('📊 Resumen del flujo:');",
+                  "    console.log('   ✅ Altura: Solicitado y Aprobado');",
+                  "    console.log('   ✅ Enganche: Solicitado y Aprobado');",
+                  "    console.log('   ✅ Cierre: Solicitado y Aprobado');",
+                  "    ",
+                  "} else {",
+                  "    console.log('❌ Error al aprobar permiso:', pm.response.status);",
+                  "    console.log('📄 Respuesta:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+} 

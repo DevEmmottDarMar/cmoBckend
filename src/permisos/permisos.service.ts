@@ -51,7 +51,7 @@ export class PermisosService {
 
   async findAll(): Promise<Permiso[]> {
     return this.permisoRepository.find({
-      relations: ['trabajo', 'tecnico', 'supervisor', 'tipoPermiso'],
+      relations: ['trabajo', 'tecnico', 'supervisor', 'tipoPermiso', 'imagenes'],
       order: { fechaSolicitud: 'DESC' },
     });
   }
@@ -59,7 +59,7 @@ export class PermisosService {
   async findOne(id: string): Promise<Permiso> {
     const permiso = await this.permisoRepository.findOne({
       where: { id },
-      relations: ['trabajo', 'tecnico', 'supervisor', 'tipoPermiso'],
+      relations: ['trabajo', 'tecnico', 'supervisor', 'tipoPermiso', 'imagenes'],
     });
 
     if (!permiso) {
@@ -72,7 +72,7 @@ export class PermisosService {
   async findByTrabajo(trabajoId: string): Promise<Permiso[]> {
     return this.permisoRepository.find({
       where: { trabajoId },
-      relations: ['trabajo', 'tecnico', 'supervisor', 'tipoPermiso'],
+      relations: ['trabajo', 'tecnico', 'supervisor', 'tipoPermiso', 'imagenes'],
       order: { fechaSolicitud: 'ASC' },
     });
   }
@@ -80,7 +80,7 @@ export class PermisosService {
   async findByTecnico(tecnicoId: string): Promise<Permiso[]> {
     return this.permisoRepository.find({
       where: { tecnicoId },
-      relations: ['trabajo', 'tecnico', 'supervisor', 'tipoPermiso'],
+      relations: ['trabajo', 'tecnico', 'supervisor', 'tipoPermiso', 'imagenes'],
       order: { fechaSolicitud: 'DESC' },
     });
   }
@@ -88,7 +88,7 @@ export class PermisosService {
   async findPendientes(): Promise<Permiso[]> {
     return this.permisoRepository.find({
       where: { estado: EstadoPermiso.PENDIENTE },
-      relations: ['trabajo', 'tecnico', 'supervisor', 'tipoPermiso'],
+      relations: ['trabajo', 'tecnico', 'supervisor', 'tipoPermiso', 'imagenes'],
       order: { fechaSolicitud: 'ASC' },
     });
   }
@@ -125,7 +125,7 @@ export class PermisosService {
     permisoId: string,
     tecnicoId: string,
     descripcion?: string,
-    imagenTecnico?: string,
+    imagenUrl?: string,
   ): Promise<Permiso> {
     const permiso = await this.findOne(permisoId);
     
@@ -150,10 +150,26 @@ export class PermisosService {
 
     permiso.tecnicoId = tecnicoId;
     permiso.descripcion = descripcion;
-    permiso.imagenTecnico = imagenTecnico;
     permiso.fechaSolicitud = new Date();
 
-    // Guardar el permiso sin cargar las relaciones de imágenes para evitar conflictos
+    // Si se proporciona una URL de imagen, crear la entidad Imagen
+    if (imagenUrl) {
+      try {
+        await this.imagenesService.create({
+          nombre: `Imagen permiso ${permiso.tipoPermiso?.nombre || 'permiso'}`,
+          url: imagenUrl,
+          mimeType: 'image/jpeg', // Por defecto, se puede mejorar detectando el tipo
+          tamaño: 0, // No tenemos el tamaño real de la URL
+          descripcion: `Imagen para permiso de ${permiso.tipoPermiso?.nombre || 'permiso'}`,
+          permisoId: permisoId,
+          uploadedBy: tecnicoId,
+        });
+      } catch (error) {
+        throw new BadRequestException(`Error al crear la imagen: ${error.message}`);
+      }
+    }
+
+    // Guardar el permiso
     const permisoGuardado = await this.permisoRepository.save(permiso);
     
     // Recargar el permiso con todas las relaciones para la respuesta
@@ -227,6 +243,15 @@ export class PermisosService {
     console.log('📝 descripcion:', descripcion);
     console.log('🖼️ imagen:', imagen ? 'Archivo presente' : 'Sin archivo');
     
+    if (imagen) {
+      console.log('📁 Detalles del archivo:', {
+        originalname: imagen.originalname,
+        mimetype: imagen.mimetype,
+        size: imagen.size,
+        buffer: imagen.buffer ? `${imagen.buffer.length} bytes` : 'No buffer',
+      });
+    }
+    
     const permiso = await this.findOne(permisoId);
     console.log('✅ Permiso encontrado:', { id: permiso.id, estado: permiso.estado, trabajoId: permiso.trabajoId });
     
@@ -257,21 +282,39 @@ export class PermisosService {
     // Si se proporciona una imagen, crearla y asociarla
     if (imagen) {
       try {
+        console.log('🖼️ Creando imagen en BD...');
         const imagenCreada = await this.imagenesService.createFromUpload(
           imagen,
           permisoId,
           tecnicoId,
           `Imagen para permiso de ${permiso.tipoPermiso?.nombre || 'permiso'}`
         );
-        
-        // Guardar la URL de la imagen en el campo imagenTecnico para compatibilidad
-        permiso.imagenTecnico = imagenCreada.url;
+        console.log('✅ Imagen creada exitosamente:', {
+          id: imagenCreada.id,
+          nombre: imagenCreada.nombre,
+          permisoId: imagenCreada.permisoId,
+        });
       } catch (error) {
+        console.error('❌ Error al crear imagen:', error);
         throw new BadRequestException(`Error al procesar la imagen: ${error.message}`);
       }
+    } else {
+      console.log('📭 No se proporcionó imagen');
     }
 
-    return this.permisoRepository.save(permiso);
+    // Guardar el permiso
+    const permisoGuardado = await this.permisoRepository.save(permiso);
+    console.log('💾 Permiso guardado:', { id: permisoGuardado.id, estado: permisoGuardado.estado });
+    
+    // Recargar el permiso con todas las relaciones para la respuesta
+    const permisoRecargado = await this.findOne(permisoGuardado.id);
+    console.log('🔄 Permiso recargado con imágenes:', {
+      id: permisoRecargado.id,
+      totalImagenes: permisoRecargado.imagenes?.length || 0,
+      imagenes: permisoRecargado.imagenes?.map(img => ({ id: img.id, nombre: img.nombre })) || [],
+    });
+    
+    return permisoRecargado;
   }
 
   /**

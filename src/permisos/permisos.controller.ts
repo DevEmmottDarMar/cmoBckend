@@ -187,7 +187,7 @@ export class PermisosController {
       type: 'object',
       properties: {
         descripcion: { type: 'string', description: 'Descripción del permiso solicitado' },
-        imagenTecnico: { type: 'string', description: 'URL de la imagen enviada por el técnico' },
+        imagenUrl: { type: 'string', description: 'URL de la imagen enviada por el técnico' },
       },
     },
   })
@@ -198,13 +198,13 @@ export class PermisosController {
   solicitarPermiso(
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: User,
-    @Body() body: { descripcion?: string; imagenTecnico?: string },
+    @Body() body: { descripcion?: string; imagenUrl?: string },
   ) {
     return this.permisosService.solicitarPermiso(
       id,
       user.id,
       body.descripcion,
-      body.imagenTecnico,
+      body.imagenUrl,
     );
   }
 
@@ -262,12 +262,36 @@ export class PermisosController {
     @Body() body: { descripcion?: string },
     @UploadedFile() imagen?: Express.Multer.File,
   ) {
+    console.log('🔍 testSolicitarPermisoConImagen - Archivo recibido:', {
+      originalname: imagen?.originalname,
+      mimetype: imagen?.mimetype,
+      size: imagen?.size,
+      buffer: imagen?.buffer ? `${imagen.buffer.length} bytes` : 'No buffer',
+    });
+    
     return this.permisosService.solicitarPermisoConImagen(
       id,
       tecnicoId,
       body.descripcion,
       imagen,
     );
+  }
+
+  // Endpoint para verificar imágenes de un permiso
+  @Get(':id/imagenes')
+  @Public()
+  @ApiOperation({
+    summary: 'Obtener imágenes de un permiso',
+    description: 'Lista todas las imágenes asociadas a un permiso específico',
+  })
+  @ApiParam({ name: 'id', description: 'ID del permiso' })
+  async getImagenesPermiso(@Param('id', ParseUUIDPipe) id: string) {
+    const permiso = await this.permisosService.findOne(id);
+    return {
+      permisoId: id,
+      totalImagenes: permiso.imagenes?.length || 0,
+      imagenes: permiso.imagenes || [],
+    };
   }
 
   @Post(':id/aprobar')

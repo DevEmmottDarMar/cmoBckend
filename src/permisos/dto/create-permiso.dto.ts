@@ -34,14 +34,7 @@ export class CreatePermisoDto {
   @IsString()
   descripcion?: string;
 
-  @ApiProperty({
-    description: 'URL de la imagen enviada por el técnico',
-    required: false,
-    example: 'https://ejemplo.com/imagen-permiso.jpg',
-  })
-  @IsOptional()
-  @IsUrl()
-  imagenTecnico?: string;
+
 
   @ApiProperty({
     description: 'ID del técnico que solicita el permiso',
